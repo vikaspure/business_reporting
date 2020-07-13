@@ -1,9 +1,9 @@
 import dateutil
 import datetime
 
-from reportGenerators.JiraFetcher import JIRA_Fetcher
-from reportGenerators.CircleCI_Fetcher import CircleCI_Fetcher
-from reportGenerators.Sonarcloud_Fetcher import generate_a_report_file_for_code_coverage_per_repo, generate_coverage_for_all_repos
+from JiraFetcher import JIRA_Fetcher
+from CircleCI_Fetcher import CircleCI_Fetcher
+from Sonarcloud_Fetcher import generate_a_report_file_for_code_coverage_per_repo, generate_coverage_for_all_repos
 
 
 project_name = 'OWA'
@@ -77,7 +77,11 @@ def run_week_27():
     end_date = datetime.datetime(2020, 7, 3, 23, 59, 59)
     generate_all_reporting_data_for_specific_week(target_versions, start_date, end_date)
 
-
+def lambda_handler(event, context):
+    print(event)
+    print("=================== In lambda =====================")
+    run_week_27()
 
 if __name__ == "__main__":
-    run_week_27()
+    #run_week_27()
+    lambda_handler("", "")
