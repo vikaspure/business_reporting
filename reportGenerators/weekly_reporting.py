@@ -1,9 +1,9 @@
 import dateutil
 import datetime
 
-from JiraFetcher import JIRA_Fetcher
-from CircleCI_Fetcher import CircleCI_Fetcher
-from Sonarcloud_Fetcher import generate_a_report_file_for_code_coverage_per_repo, generate_coverage_for_all_repos
+from reportGenerators.JiraFetcher import JIRA_Fetcher
+from reportGenerators.CircleCI_Fetcher import CircleCI_Fetcher
+from reportGenerators.Sonarcloud_Fetcher import generate_a_report_file_for_code_coverage_per_repo, generate_coverage_for_all_repos
 
 
 project_name = 'OWA'
