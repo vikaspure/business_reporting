@@ -82,15 +82,17 @@ def lambda_handler(event, context):
     print(event)
     target_versions = ["1.0.0", "1.1.0", "1.2.0"]
     try:
-        timing = json.loads(event)
+        timing = event
         start_day = timing["start_day"]
         end_day = timing["end_day"]
         end_date = datetime.datetime.now().replace(day=end_day, hour=23, minute=59, second=59)
         start_date = datetime.datetime.now().replace(day=start_day,hour=0, minute=0, second=1)
     except Exception as e:
+        print(str(e))
         end_date = datetime.datetime.now().replace(hour=23, minute=59, second=59)
         start_date = datetime.datetime.now().replace(day=end_date.day-4,hour=0, minute=0, second=1)
-    print start_date, end_date
+    print("Date Range:")
+    print(start_date, end_date)
     generate_all_reporting_data_for_specific_week(target_versions, start_date, end_date)
 
 if __name__ == "__main__":
