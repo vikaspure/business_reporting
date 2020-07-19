@@ -764,7 +764,7 @@ class JIRA_Fetcher:
 
     def create_data_as_csv_for_overrun_tickets(self, input: dict):
 
-        output_filename = 'Progress_of_tickets_from_'+input["start_date"].replace('/','_')+"_to_"+input["end_date"].replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        output_filename = '/tmp/' + 'Progress_of_tickets_from_'+input["start_date"].replace('/','_')+"_to_"+input["end_date"].replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
 
         with open(output_filename,'w') as csv_file:
             headers = list(input["data"][0].keys())
@@ -777,7 +777,7 @@ class JIRA_Fetcher:
 
     def create_data_as_csv_for_DONE_tickets(self, input: dict, show_totals=False):
 
-        output_filename = 'Agile_velocity_snapshot_of_DONE_tickets_from_'+input["start_date"].replace('/','_')+"_to_"+input["end_date"].replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        output_filename = '/tmp/' + 'Agile_velocity_snapshot_of_DONE_tickets_from_'+input["start_date"].replace('/','_')+"_to_"+input["end_date"].replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
 
         with open(output_filename,'w') as csv_file:
             if len(input["data"]) == 0:
@@ -828,7 +828,7 @@ class JIRA_Fetcher:
         print('by considering columns:', input["where"],
               ', generated at', input["timestamp_this_was_created"], ":")
 
-        output_filename = 'time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        output_filename = '/tmp/' + 'time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
 
         with open(output_filename,'w') as csv_file:
             fieldnames = ['week_commencing', 'member', 'total_hours_booked', 'version','development_hours','support_hours']
@@ -887,7 +887,7 @@ class JIRA_Fetcher:
         print('by considering columns:', input["where"],
               ', generated at', input["timestamp_this_was_created"], ":")
 
-        output_filename = 'time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        output_filename = '/tmp/' + 'time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
 
         team_total_hours = 0
         with open(output_filename,'w') as csv_file:
@@ -930,7 +930,7 @@ class JIRA_Fetcher:
 
                                  })
 
-        filename_for_intermediate_table = 'intermediate_table_for_time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        filename_for_intermediate_table = '/tmp/' + 'intermediate_table_for_time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
         with open(filename_for_intermediate_table,'w') as csv_file:
             if len(input['worklog_items']) == 0:
                 print('Version',input['version'],'remained constant during this period')

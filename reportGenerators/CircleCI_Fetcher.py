@@ -317,7 +317,7 @@ class CircleCI_Fetcher():
         print('DevOps Quality assessment (via CircleCI) between', start_date_as_str, 'and', end_date_as_str,
               ', generated at', input["timestamp_this_was_created"], ":")
 
-        output_filename = 'DevOps_snapshot_from_'+start_date_as_str.replace('/','_')+'_to_'+end_date_as_str.replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        output_filename = '/tmp/' + 'DevOps_snapshot_from_'+start_date_as_str.replace('/','_')+'_to_'+end_date_as_str.replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
 
         headers = ['week_commencing','component','total_deployments', 'successful_deployments','target_environment']
 

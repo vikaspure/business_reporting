@@ -76,7 +76,7 @@ def generate_a_report_file_for_code_coverage_per_repo(input: dict, week_start: d
     time_for_five_days_later = week_start + timedelta(days=4)
     start_as_str = week_start.strftime("%d_%m_%Y")
     end_as_str = time_for_five_days_later.strftime("%d_%m_%Y")
-    output_filename = "Code_coverage_report_per_repository_from_"+start_as_str+"_to_"+end_as_str+"_generated_at_"+input['timestamp_this_was_created']+".csv"
+    output_filename = '/tmp/' + "Code_coverage_report_per_repository_from_"+start_as_str+"_to_"+end_as_str+"_generated_at_"+input['timestamp_this_was_created']+".csv"
 
     with open(output_filename, 'w') as csv_file:
 
