@@ -24,6 +24,7 @@ import datetime
 import dateutil.parser
 import copy
 import csv
+import boto3
 
 from datetime import timedelta
 
@@ -31,6 +32,19 @@ from datetime import timedelta
 def get_now_as_a_string():
     now_time_object = datetime.datetime.now()
     return now_time_object.strftime("%Y%m%d_%H%M")
+
+def upload_file(file_name, bucket, object_name=None):
+    if object_name is None:
+        object_name = file_name
+
+    # Upload the file
+    s3_client = boto3.client('s3')
+    try:
+        response = s3_client.upload_file(file_name, bucket, object_name)
+    except ClientError as e:
+        print(str(e))
+        return False
+    return True
 
 def get_coverage_for_component(component_name: str):
     '''
@@ -76,7 +90,8 @@ def generate_a_report_file_for_code_coverage_per_repo(input: dict, week_start: d
     time_for_five_days_later = week_start + timedelta(days=4)
     start_as_str = week_start.strftime("%d_%m_%Y")
     end_as_str = time_for_five_days_later.strftime("%d_%m_%Y")
-    output_filename = '/tmp/' + "Code_coverage_report_per_repository_from_"+start_as_str+"_to_"+end_as_str+"_generated_at_"+input['timestamp_this_was_created']+".csv"
+    file_name = "Code_coverage_report_per_repository_from_"+start_as_str+"_to_"+end_as_str+"_generated_at_"+input['timestamp_this_was_created']+".csv"
+    output_filename = '/tmp/' + file_name
 
     with open(output_filename, 'w') as csv_file:
 
@@ -91,4 +106,5 @@ def generate_a_report_file_for_code_coverage_per_repo(input: dict, week_start: d
              'repository': repo_name.replace('pure-escapes_',''),
              'coverage(%)': coverage})
 
+    upload_file(output_filename, "pure-business-reporting", file_name)
 

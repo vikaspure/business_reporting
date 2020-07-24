@@ -9,6 +9,7 @@ import requests
 import dateutil
 from dateutil.parser import parse
 import datetime
+import boto3
 
 class CircleCI_Fetcher():
 
@@ -21,6 +22,18 @@ class CircleCI_Fetcher():
         now_time_object = datetime.datetime.now()
         return now_time_object.strftime("%Y%m%d_%H%M")
 
+    def upload_file(self, file_name, bucket, object_name=None):
+        if object_name is None:
+            object_name = file_name
+
+        # Upload the file
+        s3_client = boto3.client('s3')
+        try:
+            response = s3_client.upload_file(file_name, bucket, object_name)
+        except ClientError as e:
+            print(str(e))
+            return False
+        return True
 
     def get_deployments_of_a_branch_within_a_specific_range_of_dates(self, config: dict, minimal_print = True):
         '''
@@ -317,7 +330,8 @@ class CircleCI_Fetcher():
         print('DevOps Quality assessment (via CircleCI) between', start_date_as_str, 'and', end_date_as_str,
               ', generated at', input["timestamp_this_was_created"], ":")
 
-        output_filename = '/tmp/' + 'DevOps_snapshot_from_'+start_date_as_str.replace('/','_')+'_to_'+end_date_as_str.replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        file_name = 'DevOps_snapshot_from_'+start_date_as_str.replace('/','_')+'_to_'+end_date_as_str.replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        output_filename = '/tmp/' + file_name
 
         headers = ['week_commencing','component','total_deployments', 'successful_deployments','target_environment']
 
@@ -340,3 +354,6 @@ class CircleCI_Fetcher():
 
 
                                  })
+
+        upload_file(self, output_filename, "pure-business-reporting", file_name)
+

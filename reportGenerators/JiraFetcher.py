@@ -24,7 +24,7 @@ from requests.auth import HTTPBasicAuth
 import json
 import csv
 import pytz
-
+import boto3
 
 
 
@@ -64,6 +64,19 @@ class JIRA_Fetcher:
                                    'all_possible_and_epic': '(Bug,Story,Task, Sub-task, Epic)'
 
         }
+
+    def upload_file(self, file_name, bucket, object_name=None):
+        if object_name is None:
+            object_name = file_name
+
+        # Upload the file
+        s3_client = boto3.client('s3')
+        try:
+            response = s3_client.upload_file(file_name, bucket, object_name)
+        except ClientError as e:
+            print(str(e))
+            return False
+        return True
 
     def get_now_as_a_string(self):
         now_time_object = datetime.datetime.now()
@@ -764,7 +777,8 @@ class JIRA_Fetcher:
 
     def create_data_as_csv_for_overrun_tickets(self, input: dict):
 
-        output_filename = '/tmp/' + 'Progress_of_tickets_from_'+input["start_date"].replace('/','_')+"_to_"+input["end_date"].replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        file_name = 'Progress_of_tickets_from_'+input["start_date"].replace('/','_')+"_to_"+input["end_date"].replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        output_filename = '/tmp/' + file_name
 
         with open(output_filename,'w') as csv_file:
             headers = list(input["data"][0].keys())
@@ -775,9 +789,12 @@ class JIRA_Fetcher:
             for data_item in input["data"]:
                 writer.writerow(data_item)
 
+        self.upload_file(output_filename, "pure-business-reporting", file_name)
+
     def create_data_as_csv_for_DONE_tickets(self, input: dict, show_totals=False):
 
-        output_filename = '/tmp/' + 'Agile_velocity_snapshot_of_DONE_tickets_from_'+input["start_date"].replace('/','_')+"_to_"+input["end_date"].replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        file_name = 'Agile_velocity_snapshot_of_DONE_tickets_from_'+input["start_date"].replace('/','_')+"_to_"+input["end_date"].replace('/','_')+'_created_at_'+input["timestamp_this_was_created"]+'.csv'
+        output_filename = '/tmp/' + file_name
 
         with open(output_filename,'w') as csv_file:
             if len(input["data"]) == 0:
@@ -793,6 +810,7 @@ class JIRA_Fetcher:
                 for data_item in input["data"]:
                     writer.writerow(data_item)
 
+        self.upload_file(output_filename, "pure-business-reporting", file_name)
 
     def show_message_for_logged_work(self, input: dict, show_totals=False):
         print('For version', input["version"],'between', input["start_date"], 'and', input["end_date"],'the following members of the team have logged their time against tickets ',input["tickets_considered"],':')
@@ -828,7 +846,8 @@ class JIRA_Fetcher:
         print('by considering columns:', input["where"],
               ', generated at', input["timestamp_this_was_created"], ":")
 
-        output_filename = '/tmp/' + 'time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        file_name = 'time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        output_filename = '/tmp/' + file_name
 
         with open(output_filename,'w') as csv_file:
             fieldnames = ['week_commencing', 'member', 'total_hours_booked', 'version','development_hours','support_hours']
@@ -857,7 +876,7 @@ class JIRA_Fetcher:
 
                                  })
 
-
+        self.upload_file(output_filename, "pure-business-reporting", file_name)
 
         total_hours_booked = 0
         for member in input["members"].keys():
@@ -887,7 +906,8 @@ class JIRA_Fetcher:
         print('by considering columns:', input["where"],
               ', generated at', input["timestamp_this_was_created"], ":")
 
-        output_filename = '/tmp/' + 'time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        file_name = 'time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        output_filename = '/tmp/' + file_name
 
         team_total_hours = 0
         with open(output_filename,'w') as csv_file:
@@ -930,7 +950,11 @@ class JIRA_Fetcher:
 
                                  })
 
-        filename_for_intermediate_table = '/tmp/' + 'intermediate_table_for_time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        self.upload_file(output_filename, "pure-business-reporting", file_name)
+
+        file_name = 'intermediate_table_for_time_tracking_for_version_'+str(input["version"])+"_from_"+str(input["start_date"]).replace('/','_')+"_to_"+str(input["end_date"]).replace('/','_')+"_created_at_"+str(input["timestamp_this_was_created"])+".csv"
+        filename_for_intermediate_table = '/tmp/' + file_name
+
         with open(filename_for_intermediate_table,'w') as csv_file:
             if len(input['worklog_items']) == 0:
                 print('Version',input['version'],'remained constant during this period')
@@ -941,6 +965,8 @@ class JIRA_Fetcher:
 
                 for item in input['worklog_items']:
                     writer.writerow(item)
+
+        self.upload_file(filename_for_intermediate_table, "pure-business-reporting", file_name)
 
         print("Team total:", round(team_total_hours/8, 2),"days (8 hours = 1 day) = ", team_total_hours, "hours")
         print("")
