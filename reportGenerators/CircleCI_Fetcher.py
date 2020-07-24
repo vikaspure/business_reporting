@@ -355,5 +355,5 @@ class CircleCI_Fetcher():
 
                                  })
 
-        upload_file(self, output_filename, "pure-business-reporting", file_name)
+        self.upload_file(output_filename, "pure-business-reporting", file_name)
 
